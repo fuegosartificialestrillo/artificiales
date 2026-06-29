@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fuegos Artificiales Trillo</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;600&display=swap');
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --black: #0a0a0a;
+    --deep: #111111;
+    --gold: #f5a623;
+    --ember: #ff6b1a;
+    --teal: #00c9a7;
+    --white: #f0ece4;
+    --gray: #888;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--black);
+    color: var(--white);
+    font-family: 'Inter', sans-serif;
+    font-size: 15px;
+    line-height: 1.6;
+    overflow-x: hidden;
+  }
+
+  /* ── NAV ── */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 16px 48px;
+    background: rgba(10,10,10,0.85);
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid rgba(245,166,35,0.15);
+  }
+  .nav-logo {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 22px;
+    letter-spacing: 3px;
+    color: var(--gold);
+    text-decoration: none;
+  }
+  .nav-logo span { color: var(--ember); }
+  .nav-links { display: flex; gap: 36px; list-style: none; }
+  .nav-links a {
+    color: var(--white); text-decoration: none;
+    font-size: 12px; letter-spacing: 2px; text-transform: uppercase;
+    opacity: 0.7; transition: opacity .2s, color .2s;
+  }
+  .nav-links a:hover { opacity: 1; color: var(--gold); }
+  .hamburger { display: none; flex-direction: column; gap: 5px; cursor: pointer; background: none; border: none; }
+  .hamburger span { display: block; width: 24px; height: 2px; background: var(--white); transition: .3s; }
+
+  /* ── HERO PARALLAX ── */
+  .hero {
+    position: relative; height: 100vh; min-height: 600px;
+    display: flex; align-items: center; justify-content: center;
+    overflow: hidden; text-align: center;
+  }
+  .hero-bg {
+    position: absolute; inset: 0;
+    background:
+      radial-gradient(ellipse 80% 60% at 50% 70%, rgba(255,107,26,0.18) 0%, transparent 70%),
+      radial-gradient(ellipse 50% 40% at 20% 80%, rgba(245,166,35,0.12) 0%, transparent 60%),
+      radial-gradient(ellipse 50% 40% at 80% 80%, rgba(245,166,35,0.12) 0%, transparent 60%),
+      #0a0a0a;
+    will-change: transform;
+    transition: transform 0.05s linear;
+  }
+  /* animated sparks */
+  .sparks { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
+  .spark {
+    position: absolute; width: 2px; border-radius: 1px;
+    background: linear-gradient(to bottom, var(--gold), transparent);
+    animation: fall linear infinite;
+    opacity: 0;
+  }
+  @keyframes fall {
+    0%   { transform: translateY(-20px) rotate(var(--r)); opacity: 0; }
+    10%  { opacity: 1; }
+    90%  { opacity: 0.6; }
+    100% { transform: translateY(110vh) rotate(var(--r)); opacity: 0; }
+  }
+
+  .hero-content { position: relative; z-index: 2; padding: 0 24px; }
+  .hero-eyebrow {
+    font-size: 11px; letter-spacing: 4px; text-transform: uppercase;
+    color: var(--teal); margin-bottom: 20px; opacity: 0.9;
+  }
+  .hero-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(48px, 9vw, 110px);
+    line-height: 0.95;
+    color: var(--white);
+    letter-spacing: 2px;
+    text-shadow: 0 0 60px rgba(255,107,26,0.4);
+    margin-bottom: 28px;
+  }
+  .hero-title em { color: var(--gold); font-style: normal; }
+  .hero-sub {
+    font-size: 14px; letter-spacing: 1px; color: rgba(240,236,228,0.7);
+    margin-bottom: 36px;
+  }
+  .btn-primary {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 40px;
+    background: var(--teal);
+    color: #0a0a0a;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 18px;
+    letter-spacing: 3px;
+    text-decoration: none;
+    border-radius: 2px;
+    transition: background .2s, transform .2s, box-shadow .2s;
+    box-shadow: 0 0 30px rgba(0,201,167,0.3);
+  }
+  .btn-primary svg {
+    width: 22px;
+    height: 22px;
+    flex: 0 0 auto;
+  }
+  .btn-primary:hover {
+    background: #00e6be; transform: translateY(-2px);
+    box-shadow: 0 0 50px rgba(0,201,167,0.5);
+  }
+
+  /* ── VIDEO GALLERY ── */
+  .video-section {
+    position: relative; background: var(--black);
+    padding: 80px 0;
+  }
+  .video-main {
+    position: relative; max-width: 820px; margin: 0 auto;
+  }
+  .video-main img {
+    width: 100%; display: block;
+    filter: brightness(0.75);
+  }
+  /* floating thumbnails */
+  .video-thumbs {
+    position: absolute; inset: 0; pointer-events: none;
+  }
+  .vthumb {
+    position: absolute;
+    width: 160px; height: 100px;
+    border: 1px dashed rgba(245,166,35,0.5);
+    cursor: pointer; pointer-events: all;
+    display: flex; align-items: center; justify-content: center;
+    transition: border-color .2s, transform .2s;
+    background: rgba(10,10,10,0.4);
+    backdrop-filter: blur(2px);
+  }
+  .vthumb:hover { border-color: var(--gold); transform: scale(1.04); }
+  .vthumb .play-icon {
+    width: 36px; height: 36px; border-radius: 50%;
+    background: rgba(245,166,35,0.85);
+    display: flex; align-items: center; justify-content: center;
+    color: #0a0a0a; font-size: 14px; transition: background .2s;
+  }
+  .vthumb:hover .play-icon { background: var(--gold); }
+  .vthumb .vthumb-label {
+    position: absolute; bottom: -22px; left: 0; right: 0; text-align: center;
+    font-size: 10px; letter-spacing: 1px; color: var(--gray);
+    text-transform: uppercase;
+  }
+  /* positions */
+  .vthumb-1 { top: 15%; left: -180px; }
+  .vthumb-2 { top: 5%;  right: -180px; }
+  .vthumb-3 { bottom: 30%; right: -180px; }
+  .vthumb-4 { bottom: 5%;  left: -180px; }
+
+  /* connector lines via pseudo */
+  .vthumb::after {
+    content: '';
+    position: absolute; top: 50%; height: 1px;
+    background: rgba(245,166,35,0.3);
+    pointer-events: none;
+  }
+  .vthumb-1::after, .vthumb-4::after { left: 100%; width: 180px; }
+  .vthumb-2::after, .vthumb-3::after { right: 100%; width: 180px; }
+
+  /* ── VIDEO MODAL ── */
+  .modal-overlay {
+    display: none; position: fixed; inset: 0; z-index: 200;
+    background: rgba(0,0,0,0.9); align-items: center; justify-content: center;
+  }
+  .modal-overlay.active { display: flex; }
+  .modal-box {
+    position: relative; width: 90%; max-width: 800px;
+    background: #111; border: 1px solid rgba(245,166,35,0.2);
+    border-radius: 2px; overflow: hidden;
+  }
+  .modal-media {
+    width: 100%;
+    aspect-ratio: 16/9;
+    background: #000;
+  }
+  .modal-media video,
+  .modal-media img {
+    width: 100%;
+    height: 100%;
+    display: block;
+    object-fit: contain;
+  }
+  .modal-close {
+    position: absolute; top: 12px; right: 14px; z-index: 10;
+    background: none; border: none; color: var(--white);
+    font-size: 28px; cursor: pointer; opacity: 0.7; line-height: 1;
+  }
+  .modal-close:hover { opacity: 1; color: var(--gold); }
+  .modal-title {
+    padding: 14px 20px; font-family: 'Bebas Neue', sans-serif;
+    letter-spacing: 2px; color: var(--gold); font-size: 16px;
+  }
+
+  /* ── SERVICES ── */
+  .services {
+    padding: 100px 48px 80px;
+    background: #0d0d0d;
+  }
+  .section-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(36px, 6vw, 72px);
+    letter-spacing: 4px;
+    text-align: center;
+    color: var(--white);
+    margin-bottom: 60px;
+    position: relative;
+  }
+  .section-title::after {
+    content: '';
+    display: block; width: 60px; height: 2px;
+    background: linear-gradient(90deg, var(--ember), var(--gold));
+    margin: 16px auto 0;
+  }
+  .services-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2px;
+    max-width: 1000px; margin: 0 auto;
+  }
+  .service-card {
+    position: relative; overflow: hidden;
+    cursor: default;
+    aspect-ratio: 4/3;
+  }
+  .service-card img {
+    width: 100%; height: 100%; object-fit: cover; display: block;
+    filter: brightness(0.6) saturate(0.8);
+    transition: filter .4s, transform .4s;
+  }
+  .service-card:hover img { filter: brightness(0.8) saturate(1); transform: scale(1.05); }
+  .service-card-info {
+    position: absolute; bottom: 0; left: 0; right: 0;
+    padding: 20px 16px 16px;
+    background: linear-gradient(to top, rgba(0,0,0,0.9) 0%, transparent 100%);
+  }
+  .service-card-title {
+    font-family: 'Bebas Neue', sans-serif;
+    letter-spacing: 2px; font-size: 17px; color: var(--white);
+    margin-bottom: 6px;
+  }
+  .service-card-desc {
+    font-size: 12px; line-height: 1.5; color: rgba(240,236,228,0.65);
+    max-width: 200px;
+    opacity: 0; transform: translateY(6px);
+    transition: opacity .3s, transform .3s;
+  }
+  .service-card:hover .service-card-desc { opacity: 1; transform: translateY(0); }
+
+  /* ── ABOUT ── */
+  .about {
+    background: var(--black);
+    padding: 100px 48px;
+    text-align: center;
+    border-top: 1px solid rgba(245,166,35,0.1);
+  }
+  .about-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(40px, 7vw, 80px);
+    letter-spacing: 6px;
+    color: var(--white);
+    margin-bottom: 40px;
+  }
+  .about-text {
+    max-width: 680px; margin: 0 auto;
+    font-size: 16px; line-height: 1.9;
+    color: rgba(240,236,228,0.75);
+    font-style: italic;
+    font-weight: 300;
+  }
+  .about-text strong { color: var(--gold); font-style: normal; font-weight: 600; }
+
+  /* ── FOOTER ── */
+  footer {
+    background: #060606;
+    padding: 30px 48px;
+    text-align: center;
+    font-size: 11px;
+    letter-spacing: 2px;
+    color: rgba(240,236,228,0.3);
+    text-transform: uppercase;
+    border-top: 1px solid rgba(245,166,35,0.08);
+  }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 900px) {
+    nav { padding: 14px 24px; }
+    .nav-links { display: none; }
+    .nav-links.open {
+      display: flex; flex-direction: column;
+      position: absolute; top: 60px; left: 0; right: 0;
+      background: rgba(10,10,10,0.97);
+      padding: 24px; gap: 20px;
+      border-bottom: 1px solid rgba(245,166,35,0.15);
+    }
+    .hamburger { display: flex; }
+
+    .video-main { max-width: 100%; padding: 0 20px; }
+    .video-thumbs { display: none; }
+    /* show thumbs as a row below on mobile */
+    .mobile-thumbs {
+      display: flex; gap: 12px; flex-wrap: wrap;
+      justify-content: center; padding: 30px 20px 0;
+    }
+    .mobile-thumb {
+      width: calc(50% - 6px); max-width: 160px;
+      border: 1px dashed rgba(245,166,35,0.5);
+      padding: 14px; text-align: center; cursor: pointer;
+      background: rgba(10,10,10,0.5);
+      transition: border-color .2s;
+    }
+    .mobile-thumb:hover { border-color: var(--gold); }
+    .mobile-thumb .play-icon {
+      width: 32px; height: 32px; border-radius: 50%;
+      background: rgba(245,166,35,0.8);
+      display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 8px; font-size: 12px; color: #0a0a0a;
+    }
+    .mobile-thumb span { font-size: 10px; letter-spacing: 1px; text-transform: uppercase; color: var(--gray); }
+
+    .services { padding: 80px 20px; }
+    .services-grid { grid-template-columns: 1fr 1fr; }
+    .about { padding: 80px 24px; }
+    footer { padding: 24px; }
+
+    .vthumb-1, .vthumb-2, .vthumb-3, .vthumb-4 { display: none; }
+  }
+  @media (max-width: 520px) {
+    .services-grid { grid-template-columns: 1fr; }
+    .service-card-desc { opacity: 1; transform: none; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .spark { display: none; }
+    .hero-bg { transition: none; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a class="nav-logo" href="#">Fuegos<span> Artificiales Trillo</span></a>
+  <ul class="nav-links" id="navLinks">
+    <li><a href="#inicio">Inicio</a></li>
+    <li><a href="#videos">Shows</a></li>
+    <li><a href="#servicios">Servicios</a></li>
+    <li><a href="#conocenos">Conócenos</a></li>
+  </ul>
+  <button class="hamburger" id="hamburger" aria-label="Menú">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+
+<!-- HERO -->
+<section class="hero" id="inicio">
+  <div class="hero-bg" id="parallaxBg"></div>
+  <div class="sparks" id="sparks"></div>
+  <div class="hero-content">
+    <p class="hero-eyebrow">✦ Fuegos Artificiales Profesionales ✦</p>
+    <h1 class="hero-title">Iluminamos<br><em>Tus Celebraciones</em></h1>
+    <p class="hero-sub">Contáctanos</p>
+    <a
+      href="https://wa.me/51997465833?text=Buenas%2C%20estoy%20interesado%20en%20contratar%20los%20servicios%20de%20Fuegos%20Artificiales%20Trillo"
+      class="btn-primary"
+      target="_blank"
+      rel="noopener"
+      aria-label="Contactar por WhatsApp al 997455833"
+    >
+      <svg viewBox="0 0 32 32" aria-hidden="true" focusable="false">
+        <path fill="currentColor" d="M16.01 3.2c-7.02 0-12.74 5.66-12.74 12.62 0 2.23.59 4.41 1.71 6.33L3.2 28.8l6.84-1.74a12.83 12.83 0 0 0 5.97 1.48c7.02 0 12.73-5.66 12.73-12.62S23.03 3.2 16.01 3.2Zm0 22.95c-1.89 0-3.74-.51-5.35-1.47l-.38-.23-4.06 1.03 1.08-3.91-.25-.4a10.13 10.13 0 0 1-1.4-5.35c0-5.64 4.65-10.23 10.36-10.23 5.7 0 10.35 4.59 10.35 10.23 0 5.64-4.65 10.33-10.35 10.33Zm5.68-7.74c-.31-.16-1.83-.9-2.12-1-.28-.11-.49-.16-.69.16-.2.31-.79 1-.97 1.2-.18.21-.36.23-.67.08-.31-.16-1.31-.48-2.5-1.53-.92-.82-1.55-1.83-1.73-2.14-.18-.31-.02-.48.14-.63.14-.14.31-.36.47-.54.16-.18.21-.31.31-.52.1-.21.05-.39-.03-.54-.08-.16-.69-1.66-.95-2.27-.25-.6-.5-.52-.69-.53h-.59c-.2 0-.53.08-.81.39-.28.31-1.06 1.03-1.06 2.51s1.09 2.91 1.24 3.12c.16.21 2.15 3.25 5.2 4.55.73.31 1.29.5 1.73.64.73.23 1.39.2 1.91.12.58-.09 1.83-.74 2.09-1.45.26-.72.26-1.33.18-1.46-.08-.13-.28-.2-.59-.35Z"/>
+      </svg>
+      997455833
+    </a>
+  </div>
+</section>
+
+<!-- VIDEO GALLERY -->
+<section class="video-section" id="videos">
+  <div class="video-main">
+    <!-- central display image -->
+    <img src="Imagenes/castillo2.png" alt="Castillo de fuegos artificiales" />
+    <!-- desktop floating thumbnails -->
+    <div class="video-thumbs">
+      <div class="vthumb vthumb-1" onclick="openModal('video','Castillones/video%201.mp4','Video Uno')">
+        <div class="play-icon">▶</div>
+        <span class="vthumb-label">CASTILLO 360</span>
+      </div>
+      <div class="vthumb vthumb-2" onclick="openModal('video','Castillones/video%202.mp4','Video Dos')">
+        <div class="play-icon">▶</div>
+        <span class="vthumb-label">BOMBARDAS</span>
+      </div>
+      <div class="vthumb vthumb-3" onclick="openModal('video','Castillones/video%203.mp4','Video Tres')">
+        <div class="play-icon">▶</div>
+        <span class="vthumb-label">CASTILLOS TEC</span>
+      </div>
+      <div class="vthumb vthumb-4" onclick="openModal('image','Castillones/5.jpg','Imagen Cinco')">
+        <div class="play-icon">▶</div>
+        <span class="vthumb-label">CLIENTES FELICES</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- mobile row of thumb buttons -->
+  <div class="mobile-thumbs" id="mobileThumbs">
+    <div class="mobile-thumb" onclick="openModal('video','Castillones/video%201.mp4','Video Uno')">
+      <div class="play-icon">▶</div>
+      <span>Video Uno</span>
+    </div>
+    <div class="mobile-thumb" onclick="openModal('video','Castillones/video%202.mp4','Video Dos')">
+      <div class="play-icon">▶</div>
+      <span>Video Dos</span>
+    </div>
+    <div class="mobile-thumb" onclick="openModal('video','Castillones/video%203.mp4','Video Tres')">
+      <div class="play-icon">▶</div>
+      <span>Video Tres</span>
+    </div>
+    <div class="mobile-thumb" onclick="openModal('image','Castillones/5.jpg','Imagen Cinco')">
+      <div class="play-icon">▶</div>
+      <span>Imagen Cinco</span>
+    </div>
+  </div>
+</section>
+
+<!-- VIDEO MODAL -->
+<div class="modal-overlay" id="videoModal" onclick="closeModal(event)">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeModalDirect()">✕</button>
+    <div class="modal-title" id="modalTitle"></div>
+    <div class="modal-media" id="modalMedia"></div>
+  </div>
+</div>
+
+<!-- SERVICES -->
+<section class="services" id="servicios">
+  <h2 class="section-title">Nuestros Servicios</h2>
+  <div class="services-grid">
+
+    <div class="service-card">
+      <img src="Castillones/bombardas.jpg" alt="Bombardas">
+      <div class="service-card-info">
+        <div class="service-card-title">Bombardas</div>
+        <div class="service-card-desc">La mejor calidad para los eventos más grandes. Un efecto único que da vida a tu evento.</div>
+      </div>
+    </div>
+
+    <div class="service-card">
+      <img src="Castillones/toritos.jpg" alt="Toros Locos">
+      <div class="service-card-info">
+        <div class="service-card-title">Toros Locos</div>
+        <div class="service-card-desc">Momentos para sorprender a tus invitados, resaltando los momentos mágicos y divertidos con los toros locos.</div>
+      </div>
+    </div>
+
+    <div class="service-card">
+      <img src="Castillones/3.jpg" alt="Fiestas Patronales">
+      <div class="service-card-info">
+        <div class="service-card-title">Fiestas Patronales</div>
+        <div class="service-card-desc">Castillones coloridos con dedicatoria con los mejores diseños</div>
+      </div>
+    </div>
+
+    <div class="service-card">
+      <img src="Castillones/bengala.jpg" alt="Luces de Bengala">
+      <div class="service-card-info">
+        <div class="service-card-title">Luces de Bengala</div>
+        <div class="service-card-desc">Magnífico efecto sencillo que no puede faltar en cualquier tipo de evento.</div>
+      </div>
+    </div>
+
+    <div class="service-card">
+      <img src="Castillones/bodas.jpg" alt="Humo Multicolor">
+      <div class="service-card-info">
+        <div class="service-card-title">Humo Multicolor</div>
+        <div class="service-card-desc">Para bodas, aniversarios creamos atmósferas increíbles con humo de distintos colores para tus momentos.</div>
+      </div>
+    </div>
+
+    <div class="service-card">
+      <img src="https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=500&q=80" alt="Piromusicales">
+      <div class="service-card-info">
+        <div class="service-card-title">Conciertos</div>
+        <div class="service-card-desc">Shows al ritmo de la música. Efectos creativos de pirotecnia para que tu evento tenga un plus.</div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section class="about" id="conocenos">
+  <h2 class="about-title">Conócenos</h2>
+  <p class="about-text">
+    <strong>Fuegos Artificiales Trillo</strong> siempre muestra su originalidad y creatividad
+    en todos los eventos del país. Nuestro diseño y fabricación de calidad de nuestros productos
+    es tema crucial e importante en nuestra empresa.<br><br>
+    Ya que nuestro objetivo es ofrecer a nuestros clientes los efectos especiales
+    más seguros y de calidad para eventos, conciertos, celebraciones sociales, etc.<br>
+    Contáctanos a los números 937604676 y 997626212
+  </p>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <p>© 1990 Fuegos Artificiales Trillo · Todos los derechos reservados</p>
+</footer>
+
+<script>
+  /* ── SPARKS ── */
+  const sparksEl = document.getElementById('sparks');
+  for (let i = 0; i < 30; i++) {
+    const s = document.createElement('div');
+    s.className = 'spark';
+    const h = 20 + Math.random() * 60;
+    s.style.cssText = `
+      left: ${Math.random() * 100}%;
+      height: ${h}px;
+      --r: ${(Math.random() - 0.5) * 30}deg;
+      animation-duration: ${3 + Math.random() * 5}s;
+      animation-delay: ${Math.random() * 6}s;
+      opacity: 0;
+    `;
+    sparksEl.appendChild(s);
+  }
+
+  /* ── PARALLAX ── */
+  const bg = document.getElementById('parallaxBg');
+  window.addEventListener('scroll', () => {
+    const scrollY = window.scrollY;
+    const hero = document.querySelector('.hero');
+    if (scrollY < hero.offsetHeight) {
+      bg.style.transform = `translateY(${scrollY * 0.45}px)`;
+    }
+  }, { passive: true });
+
+  /* ── HAMBURGER ── */
+  const ham = document.getElementById('hamburger');
+  const nav = document.getElementById('navLinks');
+  ham.addEventListener('click', () => nav.classList.toggle('open'));
+
+  /* hide mobile-thumbs on desktop via JS to support both states */
+  function checkMobile() {
+    const mt = document.getElementById('mobileThumbs');
+    mt.style.display = window.innerWidth <= 900 ? 'flex' : 'none';
+  }
+  checkMobile();
+  window.addEventListener('resize', checkMobile);
+
+  /* ── VIDEO MODAL ── */
+  function openModal(type, src, title) {
+    const media = document.getElementById('modalMedia');
+    media.innerHTML = '';
+    document.getElementById('modalTitle').textContent = title;
+
+    if (type === 'video') {
+      const video = document.createElement('video');
+      video.src = src;
+      video.controls = true;
+      video.autoplay = true;
+      video.loop = true;
+      video.muted = true;
+      video.playsInline = true;
+      media.appendChild(video);
+      video.play().catch(() => {});
+    } else {
+      const image = document.createElement('img');
+      image.src = src;
+      image.alt = title;
+      media.appendChild(image);
+    }
+
+    document.getElementById('videoModal').classList.add('active');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeModalDirect() {
+    document.getElementById('videoModal').classList.remove('active');
+    document.getElementById('modalMedia').innerHTML = '';
+    document.body.style.overflow = '';
+  }
+  function closeModal(e) {
+    if (e.target === document.getElementById('videoModal')) closeModalDirect();
+  }
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') closeModalDirect();
+  });
+</script>
+</body>
+</html>
